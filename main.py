@@ -1,16 +1,23 @@
-# This is a sample Python script.
-
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+import torch
+from torch import nn
 
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
+class CustomModel(nn.Module):
+    # def __init__(self):
+    #     super(CustomModel, self).__init__()
+    #     self.layer = nn.Linear(2, 1)
+    #
+    # def forward(self, x):
+    #     x = self.layer(x)
+    #     return x
+    pass
 
+device = "cuda" if torch.cuda.is_available() else "cpu"
+model = torch.load("faceshape_model.pth", map_location=device)
+print(model)
 
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+# with torch.no_grad():
+#     model.eval()
+#     inputs = torch.FloatTensor([[1 ** 2, 1], [5 **2, 5], [11**2, 11]]).to(device)
+#     outputs = model(inputs)
+#     print(outputs)
