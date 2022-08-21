@@ -37,12 +37,12 @@ convert_tensor = transforms.ToTensor()
 img = Image.open('data_set/Heart/heart (3).jpg').convert('RGB')
 test_ds = convert_tensor(img)
 
-print(test_ds)
+# print(test_ds)
 #
 with torch.no_grad():
     model.eval()
 
     inputs =torch.FloatTensor(test_ds.unsqueeze(0))
-
-    outputs = model(inputs)
-    print(outputs)
+    output = model(inputs)
+    pred = output.argmax(dim=1, keepdim=True)
+    print(pred)
