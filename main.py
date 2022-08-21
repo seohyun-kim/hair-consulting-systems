@@ -1,3 +1,5 @@
+import cv2
+import numpy as np
 import torch
 from torch import nn
 from torch.utils.data import Dataset, DataLoader
@@ -5,6 +7,9 @@ from efficientnet_pytorch import EfficientNet
 from PIL import Image
 from torchvision import transforms
 
+
+face_cascade = cv2.CascadeClassifier(
+    cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
 
 ORIGIN_MODEL = "best_model_origin.pth"
 ESENTIAL_MODEL = "faceshape_model.pth"
@@ -15,7 +20,6 @@ model.load_state_dict(torch.load(ESENTIAL_MODEL, map_location=device), strict=Fa
 model.eval()
 # print(model)
 
-convert_tensor = transforms.ToTensor()
 
 shape_class ={0: "heart", 1: "oblong", 2: "oval", 3: "round", 4: "square"}
 
@@ -29,10 +33,35 @@ IMG_EB = 'data_set/eb2.jpg' # 3 (박은빈)
 IMG_KHD = 'data_set/khd.jpg' # 2 Oblong (강호동)
 
 # 여기에 타겟 이미지 작성
-target_img = IMG_HEART
+target_img = cv2.imread(IMG_YJ)
+# cv2.imshow(IMG_YJ)
+# 이미지 전처리
 
+gray = cv2.cvtColor(target_img, cv2.COLOR_BGR2GRAY) # gray scale
+faces = face_cascade.detectMultiScale(gray, 1.3, 5) # 얼굴 찾기
+for (x, y, w, h) in faces:
+    cv2.rectangle(target_img, (x, y), (x + w, y + h), (255, 0, 0), 2)
+    cropped = target_img[y: y + h, x: x + w]
+    resized = cv2.resize(cropped, (200, 200))
 
-processed_img = convert_tensor(Image.open(target_img).convert('RGB'))
+    img_yuv = cv2.cvtColor(resized, cv2.COLOR_BGR2YUV)
+
+    # equalize the histogram of the Y channel
+    img_yuv[:, :, 0] = cv2.equalizeHist(img_yuv[:, :, 0])
+
+    # convert the YUV image back to RGB format
+    img_output = cv2.cvtColor(img_yuv, cv2.COLOR_YUV2BGR)
+
+    # edge enhancement
+    kernel = np.array([[0, -1, 0],
+                       [-1, 5, -1],
+                       [0, -1, 0]])
+    pre_processed_img = cv2.filter2D(src=img_output, ddepth=-1, kernel=kernel)
+
+# 텐서화
+convert_tensor = transforms.ToTensor()
+
+processed_img = convert_tensor(pre_processed_img)
 
 with torch.no_grad():
     model.eval()
