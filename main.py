@@ -35,14 +35,19 @@ model.eval()
 convert_tensor = transforms.ToTensor()
 
 # class 순서 ['Heart', 'Oblong', 'Oval', 'Round', 'Square']
+shape_class ={0: "heart", 1: "oblong", 2: "oval", 3: "round", 4: "square"}
+
 IMG_HEART = 'data_set/Heart/heart (3).jpg' # 0 (맞음)
 IMG_OBLONG = 'data_set/Oblong/oblong (6).jpg' # 4 (틀림)
 IMG_OVAL = 'data_set/Oval/Oval (2).jpg' # 3 (맞음)
 IMG_ROUND = 'data_set/Round/round (1).jpg' # 2 (틀림)
 IMG_SQUARE = 'data_set/Square/square (8).jpg' # 1 (틀림)
-IMG_YJ = 'data_set/yj.jpg' # 1
+IMG_YJ = 'data_set/yj.jpg' # 1 (유진이)
+IMG_EB = 'data_set/eb2.jpg' # 3 (박은빈)
+IMG_KHD = 'data_set/khd.jpg' # 2 Oblong (강호동)
 
-img = Image.open(IMG_YJ).convert('RGB')
+
+img = Image.open(IMG_HEART).convert('RGB')
 test_ds = convert_tensor(img)
 
 # print(test_ds)
@@ -53,6 +58,6 @@ with torch.no_grad():
     inputs =torch.FloatTensor(test_ds.unsqueeze(0))
     output = model(inputs)
     pred = output.argmax(dim=1, keepdim=True)
+    pred_class = int(pred)
 
-
-    print(pred)
+    print(shape_class[pred_class])
