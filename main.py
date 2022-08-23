@@ -2,7 +2,6 @@ import cv2
 import numpy as np
 import torch
 from torch import nn
-from torch.utils.data import Dataset, DataLoader
 from efficientnet_pytorch import EfficientNet
 from PIL import Image
 from torchvision import transforms
@@ -17,9 +16,9 @@ ESENTIAL_MODEL = "faceshape_model.pth"
 device = "cuda" if torch.cuda.is_available() else "cpu"
 model = EfficientNet.from_name('efficientnet-b5', num_classes=5)
 model.load_state_dict(torch.load(ESENTIAL_MODEL, map_location=device), strict=False)
-model.eval()
+# model = torch.load(ESENTIAL_MODEL)
+model.eval() # eval 모드로 설정
 # print(model)
-
 
 shape_class ={0: "heart", 1: "oblong", 2: "oval", 3: "round", 4: "square"}
 
@@ -34,9 +33,8 @@ IMG_KHD = 'data_set/khd.jpg' # 2 Oblong (강호동)
 
 # 여기에 타겟 이미지 작성
 target_img = cv2.imread(IMG_YJ)
-# cv2.imshow(IMG_YJ)
-# 이미지 전처리
 
+# 이미지 전처리
 gray = cv2.cvtColor(target_img, cv2.COLOR_BGR2GRAY) # gray scale
 faces = face_cascade.detectMultiScale(gray, 1.3, 5) # 얼굴 찾기
 for (x, y, w, h) in faces:
