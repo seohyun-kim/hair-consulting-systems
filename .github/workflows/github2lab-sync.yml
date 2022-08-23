@@ -34,4 +34,4 @@ jobs:
           git push -f --all gitlab;
           git push -f --tags gitlab;
 # gitlab 보호설정 해제
-# 아 그룹이름으로 하면 안되나..
+# 에이씨 안할래
