@@ -5,6 +5,7 @@ from torch import nn
 from efficientnet_pytorch import EfficientNet
 from PIL import Image
 from torchvision import transforms
+import torchvision.models as models
 
 
 face_cascade = cv2.CascadeClassifier(
@@ -15,16 +16,16 @@ ESENTIAL_MODEL = "./faceshape_model.pth"
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
-model = EfficientNet.from_pretrained('efficientnet-b5', num_classes=5)
+#model = EfficientNet.from_pretrained('efficientnet-b5', num_classes=5)
+model = EfficientNet.from_pretrained("efficientnet-b5", in_channels=3, advprop=True)
 model.load_state_dict(torch.load(ESENTIAL_MODEL, map_location=device), strict=False)
+    # strict : 엄격하게 적용할 지 여부
 
-# model = torch.load(ESENTIAL_MODEL)
-# torch.nn.Module.load_state_dict(model, strict=True)
 
 model.eval()  # eval 모드로 설정
 
-for param in model.parameters():
-    print(param)
+# for param in model.parameters():
+#     print(param)
 
 shape_class = {0: "heart", 1: "oblong", 2: "oval", 3: "round", 4: "square"}
 
@@ -68,10 +69,11 @@ convert_tensor = transforms.ToTensor()
 processed_img = convert_tensor(pre_processed_img)
 
 with torch.no_grad():
-    model.eval()
 
     inputs = torch.FloatTensor(processed_img.unsqueeze(0))
+    print(inputs.size())
     output = model(inputs)
     print(output)
-    pred = output.argmax(dim=1, keepdim=True)
-    print(shape_class[int(pred)])
+    pred_output = output.argmax(dim=1, keepdim=True)
+    print(pred_output%5) # ㅋㅋ 에잇 몰라!
+   # print(shape_class[int(pred)])
