@@ -3,3 +3,4 @@
 /workspace.xml
 ../faceshape_model.pth
 ../best_model_origin.pth
+../faceshape_model_gray.pth
