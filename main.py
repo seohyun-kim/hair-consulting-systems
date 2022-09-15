@@ -25,6 +25,7 @@ class EffNet(nn.Module):
     def __init__(self, num_classes=5):
         super(EffNet, self).__init__()
         self.eff = EfficientNet.from_pretrained('efficientnet-b5', num_classes=num_classes, in_channels=1)
+        # self.eff = EfficientNet.from_pretrained('efficientnet-b5', num_classes=num_classes, in_channels=3)
     def forward(self, x):
         x = self.eff(x)
         return x
@@ -58,8 +59,12 @@ target_img = cv2.imread(IMG_HEART)
 
 
 # 이미지 전처리
+print(target_img.shape)
 
 gray = cv2.cvtColor(target_img, cv2.COLOR_BGR2GRAY)  # gray scale
+
+print(gray.shape)
+
 faces = face_cascade.detectMultiScale(gray, 1.3, 5)  # 얼굴 찾기
 for (x, y, w, h) in faces:
     cv2.rectangle(target_img, (x, y), (x + w, y + h), (255, 0, 0), 2)
@@ -79,6 +84,7 @@ for (x, y, w, h) in faces:
                        [-1, 5, -1],
                        [0, -1, 0]])
     pre_processed_img = cv2.filter2D(src=img_output, ddepth=-1, kernel=kernel)
+    pre_processed_img = cv2.cvtColor(pre_processed_img, cv2.COLOR_BGR2GRAY)
 
 # 텐서화
 convert_tensor = transforms.ToTensor()
@@ -87,11 +93,11 @@ processed_img = convert_tensor(pre_processed_img)
 # processed_img = convert_tensor(target_img)
 
 with torch.no_grad():
-    print(processed_img.size())
+    print(processed_img.shape)
     inputs = torch.FloatTensor(processed_img.unsqueeze(0))
-    print(inputs.size())
+    print(inputs.shape)
     # inputs = inputs.unsqueeze(0)
-    print(inputs.size())
+    print(inputs.shape)
     output = model(inputs)
 
     print(output)
