@@ -3,9 +3,7 @@ import numpy as np
 import torch
 from torch import nn
 from efficientnet_pytorch import EfficientNet
-from PIL import Image
 from torchvision import transforms
-import torchvision.models as models
 
 
 face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
@@ -13,15 +11,6 @@ face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_fronta
 ORIGIN_MODEL = "best_model_origin.pth"
 ESENTIAL_MODEL = "./faceshape_model.pth"
 ESENTIAL_MODEL_GRAY = "./faceshape_model_gray.pth"
-
-
-# device = "cuda" if torch.cuda.is_available() else "cpu"
-
-# #model = EfficientNet.from_pretrained('efficientnet-b5', num_classes=5)
-# model = EfficientNet.from_pretrained("efficientnet-b5", in_channels=3, advprop=True)
-# model.load_state_dict(torch.load(ESENTIAL_MODEL, map_location=device), strict=False)
-#     # strict : 엄격하게 적용할 지 여부
-
 
 class EffNet(nn.Module):
     def __init__(self, num_classes=5):
