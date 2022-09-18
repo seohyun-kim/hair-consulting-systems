@@ -42,6 +42,7 @@ IMG_EB = 'data_set/Oblong/oblong_eb.jpg' # oblong
 IMG_KHD = 'data_set/Square/square_khd.jpg' # square
 ING_JB = 'data_set/Oval/oval_jb.jpg' # round
 IMG_DM = 'data_set/Round/round_dami.jpg' # round
+IMG_KARINA = 'data_set/Oval/oval_karina.jpg' # oval
 
 # 우리 사진
 IMG_SH = 'data_set/seohyun.jpg' # square
@@ -50,7 +51,7 @@ IMG_TH = 'data_set/taehoon.jpg' # heart
 
 
 # 여기에 타겟 이미지 작성
-target_img = cv2.imread(IMG_TH)
+target_img = cv2.imread(IMG_KARINA)
 
 # 이미지 전처리
 gray = cv2.cvtColor(target_img, cv2.COLOR_BGR2GRAY)  # gray scale
