@@ -36,10 +36,11 @@ IMG_OBLONG = 'data_set/Oblong/oblong (9).jpg' # oblong
 IMG_OVAL = 'data_set/Oval/Oval (2).jpg' # oval
 IMG_ROUND = 'data_set/Round/round (1).jpg' # oval
 IMG_SQUARE = 'data_set/Square/square (8).jpg' # square
-IMG_MINA = 'data_set/Heart/heart_mina.jpg' # round
 
+IMG_HSH = 'data_set/Heart/heart_hsh.jpg' # round
 IMG_EB = 'data_set/Oblong/oblong_eb.jpg' # oblong
 IMG_KHD = 'data_set/Square/square_khd.jpg' # square
+IMG_KTL = 'data_set/Square/square_ktl.jpg' # square
 ING_JB = 'data_set/Oval/oval_jb.jpg' # round
 IMG_DM = 'data_set/Round/round_dami.jpg' # round
 IMG_KARINA = 'data_set/Oval/oval_karina.jpg' # oval
@@ -51,7 +52,7 @@ IMG_TH = 'data_set/taehoon.jpg' # heart
 
 
 # 여기에 타겟 이미지 작성
-target_img = cv2.imread(IMG_KARINA)
+target_img = cv2.imread(IMG_HSH)
 
 # 이미지 전처리
 gray = cv2.cvtColor(target_img, cv2.COLOR_BGR2GRAY)  # gray scale
