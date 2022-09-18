@@ -8,9 +8,28 @@ from torchvision import transforms
 from tkinter import *
 import PIL.Image, PIL.ImageTk
 
-# 실행 버튼 이벤트
-def e_start():
-    print("event start")
+face_cascade = cv.CascadeClassifier(cv.data.haarcascades + 'haarcascade_frontalface_default.xml')
+ORIGIN_MODEL = "best_model_origin.pth"
+ESENTIAL_MODEL = "./faceshape_model.pth"
+ESENTIAL_MODEL_GRAY = "./faceshape_model_gray.pth"
+
+class EffNet(nn.Module):
+    def __init__(self, num_classes=5):
+        super(EffNet, self).__init__()
+        self.eff = EfficientNet.from_pretrained('efficientnet-b5', num_classes=num_classes, in_channels=1)
+    def forward(self, x):
+        x = self.eff(x)
+        return x
+
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+model = EffNet().to(device)
+
+optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
+model.load_state_dict(torch.load(ESENTIAL_MODEL, map_location=device), strict=True)
+
+model.eval()  # eval 모드로 설정
+
+shape_class = {0: "heart", 1: "oblong", 2: "oval", 3: "round", 4: "square"}
 
 class SampleApp(Tk):
     def __init__(self):
@@ -24,18 +43,6 @@ class SampleApp(Tk):
             self._frame.destroy()
         self._frame = new_frame
         self._frame.pack()
-        
-    def update(self):
-        ret, frame = self.cap.read()
-        frame = cv.cvtColor(frame, cv.COLOR_BGR2RGB)
-        if self.canvas_on_down == True:
-            frame = cv.rectangle(frame, (self.canvas_start_x, self.canvas_start_y), (self.canvas_move_x, self.canvas_move_y), (0, 0, 255), 2)
-        self.photo = PIL.ImageTk.PhotoImage(image = PIL.Image.fromarray(frame))
-        self.canvas.create_image(0, 0, image = self.photo, anchor = NW)
-        self.window.after(self.delay, self.update)
-
-
-
 
 class MainPage(Frame):
     def __init__(self, master):
@@ -47,22 +54,68 @@ class MainPage(Frame):
 class GetImagePage(Frame):
     def __init__(self, master):
         Frame.__init__(self, master)
-        cam_frame = Frame(self, bg='white', width=400, height=400)
-        cam_frame.pack(side='top', pady=10)
-        Button(self, text="Capture", command=lambda: master.switch_frame(AnalysisPage)).pack(pady=10)
+        self.cam_frame = Frame(self, bg='white', width=400, height=400)
+        self.cam_frame.pack(side='top', pady=10)
+        Button(self, text="Capture", command=lambda: [master.switch_frame(AnalysisPage), self.stop_cam()]).pack(pady=10)
         
-        # cap = cv.VideoCapture(0) # VideoCapture 객체 정의
-        cap = cv.VideoCapture('http://192.168.0.8:4747/video')
-        if not cap.isOpened():
+        self.cap = cv.VideoCapture(0) # VideoCapture 객체 정의
+        # cap = cv.VideoCapture('http://192.168.0.8:4747/video')
+        if not self.cap.isOpened():
             raise ValueError("Unable to open video source", 0)
-        cap.set(cv.CAP_PROP_FRAME_WIDTH, 400)
-        cap.set(cv.CAP_PROP_FRAME_HEIGHT, 400)
-        cam_frame.update()
+        self.cap.set(cv.CAP_PROP_FRAME_WIDTH, 400)
+        self.cap.set(cv.CAP_PROP_FRAME_HEIGHT, 400)
+        self.canvas = Canvas(self.cam_frame, width=400, height=400)
+        self.canvas.pack()
+        self.update()
+
+    def update(self):
+        ret, frame = self.cap.read()
+        self.frame = cv.cvtColor(frame, cv.COLOR_BGR2RGB)
+        # if self.canvas_on_down == True:
+        #     frame = cv.rectangle(frame, (self.canvas_start_x, self.canvas_start_y), (self.canvas_move_x, self.canvas_move_y), (0, 0, 255), 2)
+        self.photo = PIL.ImageTk.PhotoImage(image = PIL.Image.fromarray(self.frame))
+        self.canvas.create_image([0,0], anchor=NW, image=self.photo)
+        self.cam_frame.after(30, self.update)
+
+    def stop_cam(self):
+        cv.imwrite('./img/test.jpg', self.frame)
+        self.cap.release()
+
+
+        # cam_frame.update()
 
         
 class AnalysisPage(Frame):
     def __init__(self, master):
         Frame.__init__(self, master)
+        self.preprocess_image()
+
+    def preprocess_image(self):
+        target_img = cv.imread('./data_set/Heart/heart_mina.jpg')
+        # 이미지 전처리
+        gray = cv.cvtColor(target_img, cv.COLOR_BGR2GRAY)  # gray scale
+        faces = face_cascade.detectMultiScale(gray, 1.3, 5)  # 얼굴 찾기
+        for (x, y, w, h) in faces:
+            cv.rectangle(gray, (x, y), (x + w, y + h), (255, 0, 0), 2)
+            cropped = gray[y: y + h, x: x + w]
+            equalized = cv.equalizeHist(cropped)
+            # edge enhancement
+            kernel = np.array([[0, -1, 0],
+                            [-1, 5, -1],
+                            [0, -1, 0]])
+            pre_processed_img = cv.filter2D(src=equalized, ddepth=-1, kernel=kernel)
+        # 텐서화
+        convert_tensor = transforms.ToTensor()
+        processed_img = convert_tensor(pre_processed_img)
+
+        with torch.no_grad():
+            inputs = torch.FloatTensor(processed_img.unsqueeze(0))
+            output = model(inputs)
+
+            print(output)
+            pred_output = output.argmax(dim=1, keepdim=True)
+            print(pred_output)
+            print(shape_class[int(pred_output)])
         
         
 if __name__ == "__main__":
