@@ -89,6 +89,7 @@ class AnalysisPage(Frame):
     def __init__(self, master):
         Frame.__init__(self, master)
         self.preprocess_image()
+        self.result()
 
     def preprocess_image(self):
         target_img = cv.imread('./data_set/Heart/heart_mina.jpg')
@@ -113,9 +114,12 @@ class AnalysisPage(Frame):
             output = model(inputs)
 
             print(output)
-            pred_output = output.argmax(dim=1, keepdim=True)
-            print(pred_output)
-            print(shape_class[int(pred_output)])
+            self.pred_output = output.argmax(dim=1, keepdim=True)
+            print(self.pred_output)
+            print(shape_class[int(self.pred_output)])
+    
+    def result(self):
+        face_shape = Label(self, text="Face Shape: "+shape_class[int(self.pred_output)]).pack(pady=10)
         
         
 if __name__ == "__main__":
