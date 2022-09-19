@@ -193,7 +193,35 @@ class AnalysisPage(Frame):
                     # connection_drawing_spec=mp_drawing_styles     <---- 이 부분, 눈썹과 눈, 오른쪽 왼쪽 색깔(초록색, 빨강색)
                     # .get_default_face_mesh_contours_style())
 
-            
+                # 랜드마크의 좌표 정보 확인
+            for id, lm in enumerate(face_landmarks.landmark):
+                ih, iw, ic = annotated_image.shape
+                x, y = int(lm.x * iw), int(lm.y * ih)
+                # print(id,x,y)
+                # print(face_landmarks.landmark[id].x, face_landmarks.landmark[id].y, face_landmarks.landmark[id].z)
+                if id == 105:  # 왼쪽 눈썹 위
+                    cv.putText(annotated_image, str(id), (x, y), cv.FONT_HERSHEY_PLAIN, 1, (0, 255, 0), 2)
+                elif id == 334:  # 오른쪽 눈썹 위
+                    cv.putText(annotated_image, str(id), (x, y), cv.FONT_HERSHEY_PLAIN, 1, (0, 255, 0), 2)
+                elif id == 94:  # 코 끝
+                    cv.putText(annotated_image, str(id), (x, y), cv.FONT_HERSHEY_PLAIN, 1, (0, 255, 0), 2)
+                elif id == 152:  # 턱 끝
+                    cv.putText(annotated_image, str(id), (x, y), cv.FONT_HERSHEY_PLAIN, 1, (0, 255, 0), 2)
+                elif id == 263 : # 오른눈 오른쪽 끝
+                    cv.putText(annotated_image,str(id),(x,y), cv.FONT_HERSHEY_PLAIN,1,(0,255,0),2)
+                elif id == 33 : # 왼눈 왼쪽 끝
+                    cv.putText(annotated_image,str(id),(x,y), cv.FONT_HERSHEY_PLAIN,1,(0,255,0),2)
+                elif id == 61:  # 왼입술 끝
+                    cv.putText(annotated_image, str(id), (x, y), cv.FONT_HERSHEY_PLAIN, 1, (0, 0, 255), 2)
+                elif id == 291:  # 오른입술 끝
+                    cv.putText(annotated_image, str(id), (x, y), cv.FONT_HERSHEY_PLAIN, 1, (0, 0, 255), 2)
+                elif id == 0:  # 입술 위
+                    cv.putText(annotated_image, str(id), (x, y), cv.FONT_HERSHEY_PLAIN, 1, (0, 0, 255), 2)
+                elif id == 17:  # 입술 아래
+                    cv.putText(annotated_image, str(id), (x, y), cv.FONT_HERSHEY_PLAIN, 1, (0, 0, 255), 2)
+
+            cv.imshow("Image_ESEntial", annotated_image)
+
             whole_area = 0
             # 얼굴 전체의 크기 측정, 얼굴을 한 점을 공유하는 여러 개의 삼각형으로 나누어 삼각형의 넓이를 더함으로써 얼굴 넓이 측정
             for i, idx in enumerate(oval) :
@@ -343,6 +371,7 @@ class AnalysisPage(Frame):
         self.result_label.image = image
         self.result_label.pack()
 
+
     def face_analysis(self):
         if int(int(self.pred_output)) == 0:
             print('Heart')
@@ -353,6 +382,7 @@ class AnalysisPage(Frame):
                 print('Heart2')
                 self.print_image("heart2qr")
             else:
+
                 print('Face feture Error')
 
         elif int(int(self.pred_output)) == 1:
