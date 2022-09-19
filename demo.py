@@ -15,6 +15,8 @@ GUI_WIDTH = 600
 GUI_HEIGHT = 750
 CAM_WIDTH = 500
 CAM_HEIGHT = 500
+SAVE_DIR = "./img/"
+SAVE_IMG = "test.png"
 
 # 이미지 전처리
 face_cascade = cv.CascadeClassifier(cv.data.haarcascades + 'haarcascade_frontalface_default.xml')
@@ -88,11 +90,12 @@ class MainPage(Frame):
 class GetImagePage(Frame):
     def __init__(self, master):
         Frame.__init__(self, master)
+        self.IsCamStop = False
         self.cam_frame = Frame(self, bg='white', width=CAM_WIDTH, height=CAM_HEIGHT)
         self.cam_frame.pack(side='top', pady=10)
-        Button(self, text="Capture", width=20, height=10, command=lambda: [master.switch_frame(AnalysisPage), self.stop_cam()]).pack(side='bottom', pady=10)
+        Button(self, text="Capture", width=20, height=10, command=lambda: [self.stop_cam(), master.switch_frame(AnalysisPage)]).pack(side='bottom', pady=10)
         
-        self.cap = cv.VideoCapture(0) # VideoCapture 객체 정의
+        self.cap = cv.VideoCapture(cv.CAP_DSHOW+0) # VideoCapture 객체 정의
         # cap = cv.VideoCapture('http://192.168.0.8:4747/video')
         if not self.cap.isOpened():
             raise ValueError("Unable to open video source", 0)
@@ -103,14 +106,16 @@ class GetImagePage(Frame):
         self.update()
 
     def update(self):
-        ret, frame = self.cap.read()
-        self.frame = cv.cvtColor(frame, cv.COLOR_BGR2RGB)
-        self.photo = PIL.ImageTk.PhotoImage(image = PIL.Image.fromarray(self.frame))
-        self.canvas.create_image([0,0], anchor=NW, image=self.photo)
-        self.cam_frame.after(30, self.update)
+        if self.IsCamStop == False:
+            ret, frame = self.cap.read()
+            self.frame = cv.cvtColor(frame, cv.COLOR_BGR2RGB)
+            self.photo = PIL.ImageTk.PhotoImage(image = PIL.Image.fromarray(self.frame))
+            self.canvas.create_image([0,0], anchor=NW, image=self.photo)
+            self.cam_frame.after(30, self.update)
 
     def stop_cam(self):
-        cv.imwrite('./img/test.jpg', self.frame)
+        cv.imwrite(SAVE_DIR+SAVE_IMG, self.frame)
+        self.IsCamStop = True
         self.cap.release()
 
         
@@ -126,8 +131,8 @@ class AnalysisPage(Frame):
         self.result_label.destroy()
 
     def preprocess_image(self):
-        # target_img = cv.imread('./img/test.jpg')
-        target_img = cv.imread('./data_set/Oblong/oblong_eb.jpg')
+        target_img = cv.imread(SAVE_DIR+SAVE_IMG)
+        # target_img = cv.imread('./data_set/Oblong/oblong_eb.jpg')
         # 이미지 전처리
         gray = cv.cvtColor(target_img, cv.COLOR_BGR2GRAY)  # gray scale
         faces = face_cascade.detectMultiScale(gray, 1.3, 5)  # 얼굴 찾기
@@ -157,8 +162,8 @@ class AnalysisPage(Frame):
     def result(self):
         # face_shape = Label(self, text="Face Shape: "+shape_class[int(self.pred_output)]).pack(side='left', pady=5)
         
-        # IMAGE_FILES='./img/test.jpg'
-        IMAGE_FILES='./data_set/Oblong/oblong_eb.jpg'
+        IMAGE_FILES=SAVE_DIR+SAVE_IMG
+        # IMAGE_FILES='./data_set/Oblong/oblong_eb.jpg'
         with mp_face_mesh.FaceMesh(
                 static_image_mode=True,
                 max_num_faces=1,
