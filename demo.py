@@ -109,6 +109,7 @@ class GetImagePage(Frame):
         if self.IsCamStop == False:
             ret, frame = self.cap.read()
             self.frame = cv.cvtColor(frame, cv.COLOR_BGR2RGB)
+            self.frame = cv.flip(self.frame, 1)
             self.photo = PIL.ImageTk.PhotoImage(image = PIL.Image.fromarray(self.frame))
             self.canvas.create_image([0,0], anchor=NW, image=self.photo)
             self.cam_frame.after(30, self.update)
