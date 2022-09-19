@@ -373,19 +373,21 @@ class AnalysisPage(Frame):
 
 
     def face_analysis(self):
-        if int(int(self.pred_output)) == 0:
+        if int(int(self.pred_output)) == 0: # HEART
             print('Heart')
             if (self.is_wide_margin==True):
                 print('Heart1')
                 self.print_image("heart1qr")
-            if (self.is_wide_margin==False):
+            # if (self.is_wide_margin==False):
+            #     print('Heart2')
+            #     self.print_image("heart2qr")
+            # else:
+            #     print('Face feture Error')
+            else:
                 print('Heart2')
                 self.print_image("heart2qr")
-            else:
 
-                print('Face feture Error')
-
-        elif int(int(self.pred_output)) == 1:
+        elif int(int(self.pred_output)) == 1: # OBLONG
             print('Oblong')
             if (self.is_long_mid==True) or (self.is_long_philtrum==True):
                 print('Oblong1')
@@ -393,11 +395,15 @@ class AnalysisPage(Frame):
             elif (self.is_long_mid==False) and (self.is_long_philtrum==False) and (self.is_long_chin==True):
                 print('Oblong2')
                 self.print_image("oblong2qr")
-            elif (self.is_long_mid==False) and (self.is_long_philtrum==False) and (self.is_long_chin==False):
+            # elif (self.is_long_mid==False) and (self.is_long_philtrum==False) and (self.is_long_chin==False):
+            #     print('Oblong3')
+            #     self.print_image("oblong3qr")
+            # else:
+            #     print('Face feture Error')
+            else:
                 print('Oblong3')
                 self.print_image("oblong3qr")
-            else:
-                print('Face feture Error')
+
 
         elif int(int(self.pred_output)) == 2:
             print('Oval')
@@ -413,11 +419,14 @@ class AnalysisPage(Frame):
             elif (self.is_long_mid==False) and (self.is_long_philtrum==False) and (self.is_long_chin==True) and (self.is_wide_margin==False):
                 print('Oval4')
                 self.print_image("oval4qr")
-            elif (self.is_long_mid==False) and (self.is_long_philtrum==False) and (self.is_long_chin==False) and (self.is_wide_margin==True):
+            # elif (self.is_long_mid==False) and (self.is_long_philtrum==False) and (self.is_long_chin==False) and (self.is_wide_margin==True):
+            #     print('Oval5')
+            #     self.print_image("oval5qr")
+            # else:
+            #     print('Face feture Error')
+            else:
                 print('Oval5')
                 self.print_image("oval5qr")
-            else:
-                print('Face feture Error')
 
         elif int(int(self.pred_output)) == 3:
             print('Round')
@@ -427,11 +436,14 @@ class AnalysisPage(Frame):
             elif (self.is_long_mid==False) and (self.is_long_philtrum==False) and (self.is_long_chin==True) and (self.is_wide_margin==True):
                 print('Round2')
                 self.print_image("round2qr")
-            elif (self.is_long_mid==False) and (self.is_long_philtrum==False) and (self.is_long_chin==False) and (self.is_wide_margin==False):
+            # elif (self.is_long_mid==False) and (self.is_long_philtrum==False) and (self.is_long_chin==False) and (self.is_wide_margin==False):
+            #     print('Round3')
+            #     self.print_image("round3qr")
+            # else:
+            #     print('Face feture Error')
+            else:
                 print('Round3')
                 self.print_image("round3qr")
-            else:
-                print('Face feture Error')
 
         elif int(int(self.pred_output)) == 4:
             print('Square')
@@ -444,11 +456,16 @@ class AnalysisPage(Frame):
             elif (self.is_long_mid==False) and (self.is_long_philtrum==False) and (self.is_long_chin==False) and (self.is_wide_margin==True):
                 print('Square3')
                 self.print_image("square3qr")
-            elif (self.is_long_mid==False) and (self.is_long_philtrum==False) and (self.is_long_chin==False) and (self.is_wide_margin==False):
+            # elif (self.is_long_mid==False) and (self.is_long_philtrum==False) and (self.is_long_chin==False) and (self.is_wide_margin==False):
+            #     print('Square4')
+            #     self.print_image("square4qr")
+            # else:
+            #     print('Face feture Error')
+            #     self.print_image("square3qr")
+            else:
                 print('Square4')
                 self.print_image("square4qr")
-            else:
-                print('Face feture Error')
+
         else:
             print("Face Shape Error")
 
