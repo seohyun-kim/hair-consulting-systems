@@ -11,6 +11,11 @@ import PIL.Image, PIL.ImageTk
 from symtable import Symbol
 import mediapipe as mp
 
+GUI_WIDTH = 600
+GUI_HEIGHT = 750
+CAM_WIDTH = 500
+CAM_HEIGHT = 500
+
 # 이미지 전처리
 face_cascade = cv.CascadeClassifier(cv.data.haarcascades + 'haarcascade_frontalface_default.xml')
 ORIGIN_MODEL = "best_model_origin.pth"
@@ -77,32 +82,29 @@ class SampleApp(Tk):
 class MainPage(Frame):
     def __init__(self, master):
         Frame.__init__(self, master)
-        self.pack(side="bottom")
-        Button(self, text="Start", command=lambda: master.switch_frame(GetImagePage)).pack(pady=10)
+        self.pack(side='bottom')
+        Button(self, text="Start", command=lambda: master.switch_frame(GetImagePage), width=7, height=2).pack(side='bottom', pady=10)
         
-
 class GetImagePage(Frame):
     def __init__(self, master):
         Frame.__init__(self, master)
-        self.cam_frame = Frame(self, bg='white', width=400, height=400)
+        self.cam_frame = Frame(self, bg='white', width=CAM_WIDTH, height=CAM_HEIGHT)
         self.cam_frame.pack(side='top', pady=10)
-        Button(self, text="Capture", command=lambda: [master.switch_frame(AnalysisPage), self.stop_cam()]).pack(pady=10)
+        Button(self, text="Capture", width=20, height=10, command=lambda: [master.switch_frame(AnalysisPage), self.stop_cam()]).pack(side='bottom', pady=10)
         
         self.cap = cv.VideoCapture(0) # VideoCapture 객체 정의
         # cap = cv.VideoCapture('http://192.168.0.8:4747/video')
         if not self.cap.isOpened():
             raise ValueError("Unable to open video source", 0)
-        self.cap.set(cv.CAP_PROP_FRAME_WIDTH, 400)
-        self.cap.set(cv.CAP_PROP_FRAME_HEIGHT, 400)
-        self.canvas = Canvas(self.cam_frame, width=400, height=400)
+        self.cap.set(cv.CAP_PROP_FRAME_WIDTH, CAM_WIDTH)
+        self.cap.set(cv.CAP_PROP_FRAME_HEIGHT, CAM_HEIGHT)
+        self.canvas = Canvas(self.cam_frame, width=CAM_WIDTH, height=CAM_HEIGHT)
         self.canvas.pack()
         self.update()
 
     def update(self):
         ret, frame = self.cap.read()
         self.frame = cv.cvtColor(frame, cv.COLOR_BGR2RGB)
-        # if self.canvas_on_down == True:
-        #     frame = cv.rectangle(frame, (self.canvas_start_x, self.canvas_start_y), (self.canvas_move_x, self.canvas_move_y), (0, 0, 255), 2)
         self.photo = PIL.ImageTk.PhotoImage(image = PIL.Image.fromarray(self.frame))
         self.canvas.create_image([0,0], anchor=NW, image=self.photo)
         self.cam_frame.after(30, self.update)
@@ -111,19 +113,21 @@ class GetImagePage(Frame):
         cv.imwrite('./img/test.jpg', self.frame)
         self.cap.release()
 
-
-        # cam_frame.update()
-
         
 class AnalysisPage(Frame):
     def __init__(self, master):
         Frame.__init__(self, master)
         self.preprocess_image()
         self.result()
+        self.face_analysis()
+        Button(self, text="Restart", command=lambda: [self.clear(), master.switch_frame(GetImagePage)], width=7, height=2).pack(side='bottom', pady=10)
+
+    def clear(self):
+        self.result_label.destroy()
 
     def preprocess_image(self):
         # target_img = cv.imread('./img/test.jpg')
-        target_img = cv.imread('./data_set/Heart/heart_mina.jpg')
+        target_img = cv.imread('./data_set/Oblong/oblong_eb.jpg')
         # 이미지 전처리
         gray = cv.cvtColor(target_img, cv.COLOR_BGR2GRAY)  # gray scale
         faces = face_cascade.detectMultiScale(gray, 1.3, 5)  # 얼굴 찾기
@@ -151,10 +155,10 @@ class AnalysisPage(Frame):
             print(shape_class[int(self.pred_output)])
     
     def result(self):
-        face_shape = Label(self, text="Face Shape: "+shape_class[int(self.pred_output)]).pack(pady=10)
+        # face_shape = Label(self, text="Face Shape: "+shape_class[int(self.pred_output)]).pack(side='left', pady=5)
         
         # IMAGE_FILES='./img/test.jpg'
-        IMAGE_FILES='./data_set/Heart/heart_mina.jpg'
+        IMAGE_FILES='./data_set/Oblong/oblong_eb.jpg'
         with mp_face_mesh.FaceMesh(
                 static_image_mode=True,
                 max_num_faces=1,
@@ -225,7 +229,6 @@ class AnalysisPage(Frame):
             else :
                 self.is_wide_margin = False
             print("is_wide_margin = ", self.is_wide_margin)
-            margin = Label(self, text="Is long margin: "+str(self.is_wide_margin)).pack(pady=10)
 
 
             # 눈 양 끝, 아랫입술 가운데의 landmark를 이용해서 삼각형을 그리고 이목구비/전체얼굴 비율을 구한다.
@@ -250,7 +253,6 @@ class AnalysisPage(Frame):
             else :
                 self.is_long_mid = False
             print("is_long_mid = ", self.is_long_mid)
-            mid = Label(self, text="Is long mid: "+str(self.is_long_mid)).pack(pady=10)
 
             ## 얼굴 비율 측정 3, 긴 턱 판단 (중안부와 하안부의 비율)
             eyebrow_x = face_landmarks.landmark[105].x - face_landmarks.landmark[334].x
@@ -302,7 +304,6 @@ class AnalysisPage(Frame):
                 else :
                     self.is_long_chin = False
             print("is_long_chin : ", self.is_long_chin)
-            philtrum = Label(self, text="Is long chin: "+str(self.is_long_chin)).pack(pady=10)
 
             ## 얼굴 비율 측정 2, 하안부 중 긴 인중 판단
             nose2lip_x = face_landmarks.landmark[94].x - face_landmarks.landmark[17].x
@@ -324,10 +325,97 @@ class AnalysisPage(Frame):
             else :
                 self.is_long_philtrum = False
             print("is_long_philtrum = ", self.is_long_philtrum)
-            philtrum = Label(self, text="Is long philtrum: "+str(self.is_long_philtrum)).pack(pady=10)
 
+            # 이목구비 분석결과 출력
+            # margin = Label(self, text="Is long margin: "+str(self.is_wide_margin)).pack(side='left', pady=5)
+            # mid = Label(self, text="Is long mid: "+str(self.is_long_mid)).pack(side='left', pady=5)
+            # philtrum = Label(self, text="Is long chin: "+str(self.is_long_chin)).pack(side='left',pady=5)
+            # philtrum = Label(self, text="Is long philtrum: "+str(self.is_long_philtrum)).pack(side='left',pady=5)
 
+    def print_image(self, file_name):
+        image = PhotoImage(file='./UI_img/'+file_name+'.png').subsample(6)
+        self.result_label = Label(image=image)
+        self.result_label.image = image
+        self.result_label.pack()
 
+    def face_analysis(self):
+        if int(int(self.pred_output)) == 0:
+            print('Heart')
+            if (self.is_wide_margin==True):
+                print('Heart1')
+                self.print_image("heart1qr")
+            if (self.is_wide_margin==False):
+                print('Heart2')
+                self.print_image("heart2qr")
+            else:
+                print('Face feture Error')
+
+        elif int(int(self.pred_output)) == 1:
+            print('Oblong')
+            if (self.is_long_mid==True) or (self.is_long_philtrum==True):
+                print('Oblong1')
+                self.print_image("oblong1qr")
+            elif (self.is_long_mid==False) and (self.is_long_philtrum==False) and (self.is_long_chin==True):
+                print('Oblong2')
+                self.print_image("oblong2qr")
+            elif (self.is_long_mid==False) and (self.is_long_philtrum==False) and (self.is_long_chin==False):
+                print('Oblong3')
+                self.print_image("oblong3qr")
+            else:
+                print('Face feture Error')
+
+        elif int(int(self.pred_output)) == 2:
+            print('Oval')
+            if (self.is_long_mid==True) and (self.is_long_philtrum==False) and (self.is_wide_margin==False):
+                print('Oval1')
+                self.print_image("oval1qr")
+            elif (self.is_long_mid==True) and (self.is_long_philtrum==False) and (self.is_wide_margin==False):
+                print('Oval2')
+                self.print_image("oval2qr")
+            elif (self.is_long_mid==False) and (self.is_long_philtrum==True) and (self.is_long_chin==False) and (self.is_wide_margin==False):
+                print('Oval3')
+                self.print_image("oval3qr")
+            elif (self.is_long_mid==False) and (self.is_long_philtrum==False) and (self.is_long_chin==True) and (self.is_wide_margin==False):
+                print('Oval4')
+                self.print_image("oval4qr")
+            elif (self.is_long_mid==False) and (self.is_long_philtrum==False) and (self.is_long_chin==False) and (self.is_wide_margin==True):
+                print('Oval5')
+                self.print_image("oval5qr")
+            else:
+                print('Face feture Error')
+
+        elif int(int(self.pred_output)) == 3:
+            print('Round')
+            if (self.is_long_mid==True) or (self.is_long_philtrum==True) and (self.is_wide_margin==False):
+                print('Round1')
+                self.print_image("round1qr")
+            elif (self.is_long_mid==False) and (self.is_long_philtrum==False) and (self.is_long_chin==True) and (self.is_wide_margin==True):
+                print('Round2')
+                self.print_image("round2qr")
+            elif (self.is_long_mid==False) and (self.is_long_philtrum==False) and (self.is_long_chin==False) and (self.is_wide_margin==False):
+                print('Round3')
+                self.print_image("round3qr")
+            else:
+                print('Face feture Error')
+
+        elif int(int(self.pred_output)) == 4:
+            print('Square')
+            if (self.is_long_mid==True) or (self.is_long_philtrum==True) and (self.is_wide_margin==False):
+                print('Square1')
+                self.print_image("square1qr")
+            elif (self.is_long_mid==False) and (self.is_long_philtrum==False) and (self.is_long_chin==True) and (self.is_wide_margin==False):
+                print('Square2')
+                self.print_image("square2qr")
+            elif (self.is_long_mid==False) and (self.is_long_philtrum==False) and (self.is_long_chin==False) and (self.is_wide_margin==True):
+                print('Square3')
+                self.print_image("square3qr")
+            elif (self.is_long_mid==False) and (self.is_long_philtrum==False) and (self.is_long_chin==False) and (self.is_wide_margin==False):
+                print('Square4')
+                self.print_image("square4qr")
+            else:
+                print('Face feture Error')
+        else:
+            print("Face Shape Error")
 
 
 # self.is_wide_margin # 여백
@@ -340,5 +428,5 @@ class AnalysisPage(Frame):
 if __name__ == "__main__":
     app = SampleApp()
     app.title('demo')
-    app.geometry('500x500')
+    app.geometry(str(GUI_WIDTH)+'x'+str(GUI_HEIGHT))
     app.mainloop()
