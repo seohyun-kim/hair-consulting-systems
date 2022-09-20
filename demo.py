@@ -110,6 +110,7 @@ class GetImagePage(Frame):
         if self.IsCamStop == False:
             ret, frame = self.cap.read()
             self.frame = cv.cvtColor(frame, cv.COLOR_BGR2RGB)
+            self.frame = cv.flip(self.frame, 1)
             self.photo = PIL.ImageTk.PhotoImage(image = PIL.Image.fromarray(self.frame))
             self.canvas.create_image([0,0], anchor=NW, image=self.photo)
             self.cam_frame.after(30, self.update)
@@ -201,7 +202,35 @@ class AnalysisPage(Frame):
                     # connection_drawing_spec=mp_drawing_styles     <---- 이 부분, 눈썹과 눈, 오른쪽 왼쪽 색깔(초록색, 빨강색)
                     # .get_default_face_mesh_contours_style())
 
-            
+                # 랜드마크의 좌표 정보 확인
+            for id, lm in enumerate(face_landmarks.landmark):
+                ih, iw, ic = annotated_image.shape
+                x, y = int(lm.x * iw), int(lm.y * ih)
+                # print(id,x,y)
+                # print(face_landmarks.landmark[id].x, face_landmarks.landmark[id].y, face_landmarks.landmark[id].z)
+                if id == 105:  # 왼쪽 눈썹 위
+                    cv.putText(annotated_image, str(id), (x, y), cv.FONT_HERSHEY_PLAIN, 1, (0, 255, 0), 2)
+                elif id == 334:  # 오른쪽 눈썹 위
+                    cv.putText(annotated_image, str(id), (x, y), cv.FONT_HERSHEY_PLAIN, 1, (0, 255, 0), 2)
+                elif id == 94:  # 코 끝
+                    cv.putText(annotated_image, str(id), (x, y), cv.FONT_HERSHEY_PLAIN, 1, (0, 255, 0), 2)
+                elif id == 152:  # 턱 끝
+                    cv.putText(annotated_image, str(id), (x, y), cv.FONT_HERSHEY_PLAIN, 1, (0, 255, 0), 2)
+                elif id == 263 : # 오른눈 오른쪽 끝
+                    cv.putText(annotated_image,str(id),(x,y), cv.FONT_HERSHEY_PLAIN,1,(0,255,0),2)
+                elif id == 33 : # 왼눈 왼쪽 끝
+                    cv.putText(annotated_image,str(id),(x,y), cv.FONT_HERSHEY_PLAIN,1,(0,255,0),2)
+                elif id == 61:  # 왼입술 끝
+                    cv.putText(annotated_image, str(id), (x, y), cv.FONT_HERSHEY_PLAIN, 1, (0, 0, 255), 2)
+                elif id == 291:  # 오른입술 끝
+                    cv.putText(annotated_image, str(id), (x, y), cv.FONT_HERSHEY_PLAIN, 1, (0, 0, 255), 2)
+                elif id == 0:  # 입술 위
+                    cv.putText(annotated_image, str(id), (x, y), cv.FONT_HERSHEY_PLAIN, 1, (0, 0, 255), 2)
+                elif id == 17:  # 입술 아래
+                    cv.putText(annotated_image, str(id), (x, y), cv.FONT_HERSHEY_PLAIN, 1, (0, 0, 255), 2)
+
+            cv.imshow("Image_ESEntial", annotated_image)
+
             whole_area = 0
             # 얼굴 전체의 크기 측정, 얼굴을 한 점을 공유하는 여러 개의 삼각형으로 나누어 삼각형의 넓이를 더함으로써 얼굴 넓이 측정
             for i, idx in enumerate(oval) :
@@ -351,19 +380,23 @@ class AnalysisPage(Frame):
         self.result_label.image = image
         self.result_label.pack()
 
+
     def face_analysis(self):
-        if int(int(self.pred_output)) == 0:
+        if int(int(self.pred_output)) == 0: # HEART
             print('Heart')
             if (self.is_wide_margin==True):
                 print('Heart1')
                 self.print_image("heart1qr")
-            if (self.is_wide_margin==False):
+            # if (self.is_wide_margin==False):
+            #     print('Heart2')
+            #     self.print_image("heart2qr")
+            # else:
+            #     print('Face feture Error')
+            else:
                 print('Heart2')
                 self.print_image("heart2qr")
-            else:
-                print('Face feture Error')
 
-        elif int(int(self.pred_output)) == 1:
+        elif int(int(self.pred_output)) == 1: # OBLONG
             print('Oblong')
             if (self.is_long_mid==True) or (self.is_long_philtrum==True):
                 print('Oblong1')
@@ -371,11 +404,15 @@ class AnalysisPage(Frame):
             elif (self.is_long_mid==False) and (self.is_long_philtrum==False) and (self.is_long_chin==True):
                 print('Oblong2')
                 self.print_image("oblong2qr")
-            elif (self.is_long_mid==False) and (self.is_long_philtrum==False) and (self.is_long_chin==False):
+            # elif (self.is_long_mid==False) and (self.is_long_philtrum==False) and (self.is_long_chin==False):
+            #     print('Oblong3')
+            #     self.print_image("oblong3qr")
+            # else:
+            #     print('Face feture Error')
+            else:
                 print('Oblong3')
                 self.print_image("oblong3qr")
-            else:
-                print('Face feture Error')
+
 
         elif int(int(self.pred_output)) == 2:
             print('Oval')
@@ -391,11 +428,14 @@ class AnalysisPage(Frame):
             elif (self.is_long_mid==False) and (self.is_long_philtrum==False) and (self.is_long_chin==True) and (self.is_wide_margin==False):
                 print('Oval4')
                 self.print_image("oval4qr")
-            elif (self.is_long_mid==False) and (self.is_long_philtrum==False) and (self.is_long_chin==False) and (self.is_wide_margin==True):
+            # elif (self.is_long_mid==False) and (self.is_long_philtrum==False) and (self.is_long_chin==False) and (self.is_wide_margin==True):
+            #     print('Oval5')
+            #     self.print_image("oval5qr")
+            # else:
+            #     print('Face feture Error')
+            else:
                 print('Oval5')
                 self.print_image("oval5qr")
-            else:
-                print('Face feture Error')
 
         elif int(int(self.pred_output)) == 3:
             print('Round')
@@ -405,11 +445,14 @@ class AnalysisPage(Frame):
             elif (self.is_long_mid==False) and (self.is_long_philtrum==False) and (self.is_long_chin==True) and (self.is_wide_margin==True):
                 print('Round2')
                 self.print_image("round2qr")
-            elif (self.is_long_mid==False) and (self.is_long_philtrum==False) and (self.is_long_chin==False) and (self.is_wide_margin==False):
+            # elif (self.is_long_mid==False) and (self.is_long_philtrum==False) and (self.is_long_chin==False) and (self.is_wide_margin==False):
+            #     print('Round3')
+            #     self.print_image("round3qr")
+            # else:
+            #     print('Face feture Error')
+            else:
                 print('Round3')
                 self.print_image("round3qr")
-            else:
-                print('Face feture Error')
 
         elif int(int(self.pred_output)) == 4:
             print('Square')
@@ -422,11 +465,16 @@ class AnalysisPage(Frame):
             elif (self.is_long_mid==False) and (self.is_long_philtrum==False) and (self.is_long_chin==False) and (self.is_wide_margin==True):
                 print('Square3')
                 self.print_image("square3qr")
-            elif (self.is_long_mid==False) and (self.is_long_philtrum==False) and (self.is_long_chin==False) and (self.is_wide_margin==False):
+            # elif (self.is_long_mid==False) and (self.is_long_philtrum==False) and (self.is_long_chin==False) and (self.is_wide_margin==False):
+            #     print('Square4')
+            #     self.print_image("square4qr")
+            # else:
+            #     print('Face feture Error')
+            #     self.print_image("square3qr")
+            else:
                 print('Square4')
                 self.print_image("square4qr")
-            else:
-                print('Face feture Error')
+
         else:
             print("Face Shape Error")
 
