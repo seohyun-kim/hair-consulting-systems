@@ -6,6 +6,7 @@ from efficientnet_pytorch import EfficientNet
 from torchvision import transforms
 
 from tkinter import *
+import tkinter.messagebox
 import PIL.Image, PIL.ImageTk
 
 from symtable import Symbol
@@ -123,7 +124,7 @@ class GetImagePage(Frame):
 class AnalysisPage(Frame):
     def __init__(self, master):
         Frame.__init__(self, master)
-        self.preprocess_image()
+        self.preprocess_image(master)
         self.result()
         self.face_analysis()
         Button(self, text="Restart", command=lambda: [self.clear(), master.switch_frame(GetImagePage)], width=7, height=2).pack(side='bottom', pady=10)
@@ -131,12 +132,19 @@ class AnalysisPage(Frame):
     def clear(self):
         self.result_label.destroy()
 
-    def preprocess_image(self):
+    def no_face_warning_msgbox(self):
+        tkinter.messagebox.showwarning("warning", "No Face\nCapture Face Again")
+
+    def preprocess_image(self, master):
         target_img = cv.imread(SAVE_DIR+SAVE_IMG)
         # target_img = cv.imread('./data_set/Oblong/oblong_eb.jpg')
         # 이미지 전처리
         gray = cv.cvtColor(target_img, cv.COLOR_BGR2GRAY)  # gray scale
         faces = face_cascade.detectMultiScale(gray, 1.3, 5)  # 얼굴 찾기
+        if len(faces) == 0:
+            master.switch_frame(GetImagePage)
+            self.no_face_warning_msgbox()
+
         for (x, y, w, h) in faces:
             cv.rectangle(gray, (x, y), (x + w, y + h), (255, 0, 0), 2)
             cropped = gray[y: y + h, x: x + w]
