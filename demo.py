@@ -375,7 +375,7 @@ class AnalysisPage(Frame):
             # philtrum = Label(self, text="Is long philtrum: "+str(self.is_long_philtrum)).pack(side='left',pady=5)
 
     def print_image(self, file_name):
-        image = PhotoImage(file='./UI_img/'+file_name+'.png').subsample(6)
+        image = PhotoImage(file='./qr_img/'+file_name+'.png').subsample(6)
         self.result_label = Label(image=image)
         self.result_label.image = image
         self.result_label.pack()
