@@ -52,3 +52,12 @@ is_long_mid =  False
 is_long_chin :  False
 is_long_philtrum =  True
 ```
+
+
+<br>  
+
+## 3. Hair Style Consult
+
+### 3.1 Test Report
+<img src="https://user-images.githubusercontent.com/61939286/191515937-5f8a3bc6-6fe4-4184-8ebf-0e2244876c32.png" width="70%">
+
