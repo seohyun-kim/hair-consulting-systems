@@ -59,5 +59,6 @@ is_long_philtrum =  True
 ## 3. Hair Style Consult
 
 ### 3.1 Test Report
-<img src="https://user-images.githubusercontent.com/61939286/191515937-5f8a3bc6-6fe4-4184-8ebf-0e2244876c32.png" width="70%">
+<img src="https://user-images.githubusercontent.com/61939286/191519174-e415430b-313a-4ec5-a704-960722b3ec30.png" width="70%">
+
 
