@@ -38,7 +38,7 @@ reference code:
 ### 2.2 Analysis
 |mid|chin|philtrum|
 |--|----|---|
-|<img src="https://user-images.githubusercontent.com/61939286/191513217-7e8b0438-5aca-4dc6-a85b-d382e1aa2766.png" width="80%">|<img src="https://user-images.githubusercontent.com/61939286/191512737-8c74f5b7-3b03-4716-af39-1588c49c7658.png" width="80%">|<img src="https://user-images.githubusercontent.com/61939286/191512801-677f2a4b-4bb7-4663-b14d-2d7a9fc3badd.png" width="80%">|
+|<img src="https://user-images.githubusercontent.com/61939286/191513217-7e8b0438-5aca-4dc6-a85b-d382e1aa2766.png" width="300">|<img src="https://user-images.githubusercontent.com/61939286/191512737-8c74f5b7-3b03-4716-af39-1588c49c7658.png" width="300">|<img src="https://user-images.githubusercontent.com/61939286/191512801-677f2a4b-4bb7-4663-b14d-2d7a9fc3badd.png" width="300">|
 
 <br>  
 
