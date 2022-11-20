@@ -1,4 +1,20 @@
-# face-shape-model
+# 💇‍♀️Hair Consulting Systems
+
+## 📌 Quick Start
+
+1. clone
+  ```
+    git clone https://github.com/ESEntial/hair-consulting-demo.git
+    cd /hair-consulting-demo
+  ```
+2. [download model file - Google Drive](https://drive.google.com/drive/folders/1fbIuaVF_Mj87NVAVYynu4EwyhUajDtXt?usp=share_link)  
+  save path: /hair-consulting-demo/faceshape_model.pth
+
+3. execute
+  ```
+   python demo.py
+  ```
+
 
 ## 1. Face Shape
 
