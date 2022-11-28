@@ -1,4 +1,20 @@
-# face-shape-model
+# 💇‍♀️Hair Consulting Systems
+
+## 📌 Quick Start
+
+1. clone
+  ```
+    git clone https://github.com/ESEntial/hair-consulting-demo.git
+    cd /hair-consulting-demo
+  ```
+2. [download model file - Google Drive](https://drive.google.com/drive/folders/1fbIuaVF_Mj87NVAVYynu4EwyhUajDtXt?usp=share_link)  
+  save path: /hair-consulting-demo/faceshape_model.pth
+
+3. execute
+  ```
+   python demo.py
+  ```
+
 
 ## 1. Face Shape
 
@@ -59,5 +75,6 @@ is_long_philtrum =  True
 ## 3. Hair Style Consult
 
 ### 3.1 Test Report
-<img src="https://user-images.githubusercontent.com/61939286/191515937-5f8a3bc6-6fe4-4184-8ebf-0e2244876c32.png" width="70%">
+<img src="https://user-images.githubusercontent.com/61939286/191519174-e415430b-313a-4ec5-a704-960722b3ec30.png" width="70%">
+
 
