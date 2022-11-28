@@ -51,8 +51,10 @@ IMG_YJ = 'data_set/Round/round_yj.jpg' # round
 IMG_TH = 'data_set/taehoon.jpg' # heart
 
 
+
 # 여기에 타겟 이미지 작성
-target_img = cv2.imread(IMG_HSH)
+target_img = cv2.imread(ING_JB)
+
 
 # 이미지 전처리
 gray = cv2.cvtColor(target_img, cv2.COLOR_BGR2GRAY)  # gray scale
